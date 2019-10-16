@@ -9,6 +9,7 @@ This software is made by using:
 * JserialComm for communicatation with a microcontroller
 * Apache Client
 * MySQL Server 
+* Scene Builder 8
 ```
 
 ## How does it looks like?
