@@ -45,10 +45,19 @@ The pinmap looks like this.
 
 ![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Pinmap.png)
 
-And where are the pins I have used. Notice that there are a Dither PWM pin too. That pin works that it have a constant PWM frequency. Very usefull for hydraulical propotional valves to make the main spool in a floating point all the time = reduce friction. But the PWM dither pin can serves for a simple cheap DC motor as well.
+And where are the pins I have used. Notice that there is a Dither PWM pin too. That pin works that it have a constant PWM frequency. Very usefull for hydraulical propotional valves to make the main spool in a floating point all the time = reduce friction. But the PWM dither pin can serves for a simple cheap DC motor as well.
 
 ![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/CPU.png)
 
+## Example
+
+Here I put a LED lamp to the PWM output PA8 and a potentiometer to the analog input A0.
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Setup.jpg)
+
+And here is the real time logging display. I have only select one legend, therefore one slider will only be avaiable to use and only one measurement column in the log file.
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/SetupLog.png)
 
 ## How do I use this software?
 
@@ -76,4 +85,48 @@ gradlew run // For Windows
 
 Step 8: Create a mobile application of JLogger
 https://docs.gluonhq.com/getting-started/#introduction
+
+## How can I configure the JLoggerDevice?
+
+First you need to use Atollic TrueStudio to import the project. 
+Then you need to use the CubeMX to change the inputs and clock configurations. You don't need to use PWM if you don't want.
+In the main.c file, you can change where what you want to do. Example if you want to replace the PWM with SPI or something.
+
+```
+/*
+ * When we get our message, in this case it will be sizeof(RXData) bytes of slider inputs.
+ * This method will be called
+ */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+
+	// Convert RXData to timer pulses - Not for the ADC and the Diter. They are constant clock
+	htim1.Instance->CCR1 = (uint32_t) ((RXData[0] << 8) | RXData[1]);
+	htim1.Instance->CCR2 = (uint32_t) ((RXData[2] << 8) | RXData[3]);
+	htim1.Instance->CCR3 = (uint32_t) ((RXData[4] << 8) | RXData[5]);
+	htim1.Instance->CCR4 = (uint32_t) ((RXData[6] << 8) | RXData[7]);
+	htim2.Instance->CCR1 = (uint32_t) ((RXData[8] << 8) | RXData[9]);
+	htim2.Instance->CCR2 = (uint32_t) ((RXData[10] << 8) | RXData[11]);
+
+	// Convert ADC values to
+	TXData[0] = (uint8_t) (ADCValues[0] >> 8);
+	TXData[1] = (uint8_t) (ADCValues[0] & 0xFF);
+	TXData[2] = (uint8_t) (ADCValues[1] >> 8);
+	TXData[3] = (uint8_t) (ADCValues[1] & 0xFF);
+	TXData[4] = (uint8_t) (ADCValues[2] >> 8);
+	TXData[5] = (uint8_t) (ADCValues[2] & 0xFF);
+	TXData[6] = (uint8_t) (ADCValues[3] >> 8);
+	TXData[7] = (uint8_t) (ADCValues[3] & 0xFF);
+	TXData[8] = (uint8_t) (ADCValues[4] >> 8);
+	TXData[9] = (uint8_t) (ADCValues[4] & 0xFF);
+	TXData[10] = (uint8_t) (ADCValues[5] >> 8);
+	TXData[11] = (uint8_t) (ADCValues[5] & 0xFF);
+
+	// Send data to JLoggerServer in about 5 milliseconds
+	HAL_UART_Transmit(&huart2, TXData, 12, 5);
+
+	// Listen for a new receive
+	HAL_UART_Receive_DMA(&huart2, RXData, 12);
+
+}
+```
 

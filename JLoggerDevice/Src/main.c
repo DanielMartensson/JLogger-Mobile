@@ -154,6 +154,7 @@ int main(void) {
 	while (1) {
 		/* USER CODE END WHILE */
 		// Have a look at void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) below
+		// hadc1.Init.DMAContinuousRequests = ENABLE; // MUST BE ENABLED. 		
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */

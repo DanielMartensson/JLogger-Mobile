@@ -64,13 +64,20 @@ public class InitialStartUp implements ApplicationListener<ContextRefreshedEvent
 	}
 
 	/**
-	 * This is a way for me to use the SerialPort in the Netty package
+	 * This is a way to first return ALL the connected devices on the USB at the start up.
+	 * Need to add one USB? Plug it in, then restart server.
 	 * 
 	 * @return
 	 */
 	@Bean
 	private Map<String, SerialPort> storeAllDevices() {
-		return new HashMap<String, SerialPort>();
+		Map<String, SerialPort> allDevices = new HashMap<String, SerialPort>();
+		SerialPort[] ports = SerialPort.getCommPorts();
+		for (int i = 0; i < ports.length; i++) {
+			String portName = ports[i].getSystemPortName();
+			allDevices.put(portName, ports[i]); 
+		}
+		return allDevices;
 	}
 
 	@Bean

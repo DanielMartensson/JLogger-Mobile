@@ -32,21 +32,19 @@ public class UserController {
 	private Map<String, SerialPort> allDevices; // This will be filled when some one calls /getdevices
 
 	/**
-	 * Get all the devices
+	 * Get all the devices to the user
 	 * 
 	 * @return
 	 */
 	@GetMapping("/getdevices")
 	public SimpleMessageStatus getDevices() {
-		// Send all the connected devices that are not used
-		SerialPort[] ports = SerialPort.getCommPorts();
 		SimpleMessageStatus simpleMessageStatus = new SimpleMessageStatus();
-		if (ports.length > 0) {
-			String[] portNames = new String[ports.length];
-			for (int i = 0; i < ports.length; i++) {
-				String portName = ports[i].getSystemPortName();
-				portNames[i] = portName;
-				allDevices.put(portName, ports[i]);
+		if (allDevices.size() > 0) {
+			String[] portNames = new String[allDevices.size()];
+			int i = 0;
+			for (Map.Entry<String, SerialPort> deviceName : allDevices.entrySet()) {
+				portNames[i] = deviceName.getKey(); // eg COM4 or /dev/ttyACM0
+				i++;
 			}
 			simpleMessageStatus.setJsonMessage(portNames);
 			simpleMessageStatus.setStatuscode(200);
@@ -106,7 +104,7 @@ public class UserController {
 			online = onlineRepository.findByUsername(username);
 			if (online != null) {
 				SerialPort serialPort = allDevices.get(online.getDevice());
-				System.out.println("Device is = " + online.getDevice() + " and serialPort = " + (serialPort == null));
+				//System.out.println("Device is = " + online.getDevice() + " and serialPort = " + (serialPort == null));
 				if(serialPort != null) { // Might be "None" as serial port = null
 					serialPort.closePort(); // Close the current port if we selected None
 					online.setDevice("None");

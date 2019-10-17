@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Created-By: Apache Maven 3.5.4
+Built-By: oleg
+Build-Jdk: 11.0.1
+Implementation-URL: http://hc.apache.org/httpcomponents-core-ga
+Implementation-Build: ${scmBranch}@r${buildNumber}; 2019-02-27 07:47:06+
+ 0000
+Implementation-Title: HttpComponents Apache HttpComponents Core HTTP/2
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache
+Implementation-Version: 5.0-beta7
+Specification-Title: HttpComponents Apache HttpComponents Core HTTP/2
+Specification-Vendor: The Apache Software Foundation
+Specification-Version: 5.0-beta7
+X-Compile-Source-JDK: 1.7
+X-Compile-Target-JDK: 1.7
+url: http://hc.apache.org/httpcomponents-core-ga
+

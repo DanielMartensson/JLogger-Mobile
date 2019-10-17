@@ -36,8 +36,8 @@ public class DeviceController {
 			TXData[i + i] = (byte) (deviceMessage.getSliderValues()[i] >> 8);
 			TXData[i + i + 1] = (byte) (deviceMessage.getSliderValues()[i]);			
 			
-			//System.out.println("TXData[" + i + " + " + i + "] = " + TXData[i+i]);
-			//System.out.println("TXData[" + i + " + " + i + " + 1] = " + TXData[i+i+1]);
+			//System.out.println("TXData[" + i + " + " + i + "] = " + TXData[i + i]);
+			//System.out.println("TXData[" + i + " + " + i + " + 1] = " + TXData[i + i + 1]);
 			//System.out.println("Slider" + i + " value: " + deviceMessage.getSliderValues()[i]);
 		}
 
