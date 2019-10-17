@@ -130,3 +130,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 ```
 
+## Troubleshooting
+
+Possible trouble number 1:
+
+If you don't get any logging values, but still connected. That means you don't send any values to the microcontroller or the microcontroller sends back to JLoggerServer, but the server don't understand. Remember, JLogger have HTTP blocking call. If the server don't answer, then the plot is going to stay still. Re-boot the server. To find the issue, have a look at PlotMeasurements.java in JLogger and DeviceController.java in JLoggerServer. They two are working together. If one stops, then the other stops as well. Most of the case, the while loop inside DeviceController.java just loops and never stops because the jSericalComm library don't read any incomming bytes. I'm working hard to make sure that this is happening. I have eliminate lots of bugs that cause the JLoggerServer won't talk to JLoggerDevice
+
+
