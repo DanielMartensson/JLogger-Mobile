@@ -63,7 +63,7 @@ And here is the real time logging display. I have only select one legend, theref
 
 Step 1: Install MySQL and create a user that have granted rights to create tables and databases
 
-Step 2: Edit the application.properties in the JLoggerServer folder. Here you place the user and password of the MySQL user you just have created.
+Step 2: Edit the application.properties in the JLoggerServer folder. Here you place the user and password of the MySQL user you just have created. Also the server is configured at port 80. That means you can connect the server from your local area IP address e.g 192.168.x.x. Set port to 8080 if you want to have localhost IP to connect with.
 
 Step 3 (optional): Edit the InitialStartUp.java class in JLoggerServer and change the admin name and admin password to your admin name admin password. Else you can just login with JLogger application with the "admin" and password "admin" and then edit the admin user because you are admin. 
 

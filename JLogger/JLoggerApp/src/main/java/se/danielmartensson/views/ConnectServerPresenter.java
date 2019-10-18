@@ -8,18 +8,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ParseException;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
-
 import com.gluonhq.charm.glisten.animation.BounceInRightTransition;
 import com.gluonhq.charm.glisten.application.MobileApplication;
 import com.gluonhq.charm.glisten.control.AppBar;
@@ -30,6 +18,17 @@ import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import cz.msebera.android.httpclient.ParseException;
+import cz.msebera.android.httpclient.auth.AuthScope;
+import cz.msebera.android.httpclient.auth.UsernamePasswordCredentials;
+import cz.msebera.android.httpclient.client.methods.CloseableHttpResponse;
+import cz.msebera.android.httpclient.client.methods.HttpGet;
+import cz.msebera.android.httpclient.client.methods.HttpPost;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.impl.client.BasicCredentialsProvider;
+import cz.msebera.android.httpclient.impl.client.CloseableHttpClient;
+import cz.msebera.android.httpclient.impl.client.HttpClients;
+import cz.msebera.android.httpclient.util.EntityUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -158,7 +157,7 @@ public class ConnectServerPresenter {
 				return; 
 			}
 			CloseableHttpResponse response = getResponse(httpclient,"http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/admin/getuser?username=" + tableView.getSelectionModel().getSelectedItem().getName(), "GET");
-			if (response.getCode() == 403) {
+			if (response.getStatusLine().getStatusCode() == 403) {
 				dialogs.alertDialog(AlertType.WARNING, "Forbidden", "You don't have the authority");
 				return; // Forbidden
 			}
@@ -211,7 +210,7 @@ public class ConnectServerPresenter {
 			httppost.setEntity(new StringEntity(new Gson().toJson(user)));
 			httppost.setHeader("Content-type", "application/json");
 			response = httpclient.execute(httppost);
-			if(response.getCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == 200) {
 				simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
 				if(simpleMessageStatus.getStatuscode() == 200) {
 					dialogs.alertDialog(AlertType.INFORMATION, "Updated", simpleMessageStatus.getMessage());
@@ -237,7 +236,7 @@ public class ConnectServerPresenter {
 			if (httpclient == null)
 				return;
 			CloseableHttpResponse response = getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/searchusers", "GET");
-			if(response.getCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == 200) {
 				// In this case, there is a JSON message of a List<Online> object included inside this simpleMessageStatus object
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
 				if(simpleMessageStatus.getStatuscode() == 200) {
@@ -275,7 +274,7 @@ public class ConnectServerPresenter {
 				return; 
 			}
 			CloseableHttpResponse response = getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/admin/deleteuser?username=" + tableView.getSelectionModel().getSelectedItem().getName(), "POST");
-			if(response.getCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == 200) {
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
 				if(simpleMessageStatus.getStatuscode() == 200) {
 					dialogs.alertDialog(AlertType.INFORMATION, "Deleted", simpleMessageStatus.getMessage());
@@ -283,7 +282,7 @@ public class ConnectServerPresenter {
 					// In this case it's 404
 					dialogs.alertDialog(AlertType.WARNING, "Exist", simpleMessageStatus.getMessage());
 				}
-			}else if(response.getCode() == 403) {
+			}else if(response.getStatusLine().getStatusCode() == 403) {
 				dialogs.alertDialog(AlertType.WARNING, "Forbidden", "You don't have the authority");
 			}else {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
@@ -329,7 +328,7 @@ public class ConnectServerPresenter {
 			httppost.setEntity(new StringEntity(new Gson().toJson(user)));
 			httppost.setHeader("Content-type", "application/json");
 			CloseableHttpResponse response = httpclient.execute(httppost);
-			if(response.getCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == 200) {
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
 				if(simpleMessageStatus.getStatuscode() == 200) {
 					dialogs.alertDialog(AlertType.INFORMATION, "Added", simpleMessageStatus.getMessage());
@@ -337,7 +336,7 @@ public class ConnectServerPresenter {
 					// In this case it's 403
 					dialogs.alertDialog(AlertType.WARNING, "Exist", simpleMessageStatus.getMessage());
 				}
-			}else if(response.getCode() == 403) {
+			}else if(response.getStatusLine().getStatusCode() == 403) {
 				dialogs.alertDialog(AlertType.WARNING, "Forbidden", "You don't have the authority");
 			}else {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
@@ -359,7 +358,7 @@ public class ConnectServerPresenter {
 			try {
 				// First create the initial Http client
 				BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
-				credsProvider.setCredentials(new AuthScope(serverAddress.getText(), Integer.parseInt(serverPort.getSelectedItem().getText())), new UsernamePasswordCredentials(userName.getText(), password.getText().toCharArray()));
+				credsProvider.setCredentials(new AuthScope(serverAddress.getText(), Integer.parseInt(serverPort.getSelectedItem().getText())), new UsernamePasswordCredentials(userName.getText(), password.getText()));
 				CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
 				
 				// Then get our response
@@ -367,7 +366,7 @@ public class ConnectServerPresenter {
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
 				
 				// Now do some connections
-				if (response.getCode() == 200) {
+				if (response.getStatusLine().getStatusCode() == 200) {
 					if(simpleMessageStatus.getStatuscode() == 200) {
 						// Display the news
 						dialogs.alertDialog(AlertType.INFORMATION, "Connected", simpleMessageStatus.getMessage());
@@ -417,12 +416,12 @@ public class ConnectServerPresenter {
 				SimpleMessageStatus simpleMessageStatusDisconnect =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(responseDisconnect.getEntity()));				
 				
 				// Check if we got connection
-				if (responseDisconnect.getCode() == 200) {
+				if (responseDisconnect.getStatusLine().getStatusCode() == 200) {
 					// Logout the user from Spring Security
 					CloseableHttpResponse responseLogout = getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/logout", "POST");
 
 					// Check if we could logout from Spring
-					if(responseLogout.getCode() == 204) {
+					if(responseLogout.getStatusLine().getStatusCode() == 204) {
 						// Display the news
 						dialogs.alertDialog(AlertType.INFORMATION, "Logged out", simpleMessageStatusDisconnect.getMessage());
 						connectServerButton.setText("Connect to the server");
@@ -448,11 +447,11 @@ public class ConnectServerPresenter {
 						tableViewListener.clear();
 						tableView.setDisable(true);
 					}else {
-						dialogs.alertDialog(AlertType.WARNING, "Disconneted only. Try login -> Logout", responseLogout.getReasonPhrase());
+						dialogs.alertDialog(AlertType.WARNING, "Disconneted only. Try login -> Logout", responseLogout.getStatusLine().getReasonPhrase());
 					}
 					responseLogout.close();
 				} else {
-					dialogs.alertDialog(AlertType.ERROR, "Not disconnected", responseDisconnect.getReasonPhrase());
+					dialogs.alertDialog(AlertType.ERROR, "Not disconnected", responseDisconnect.getStatusLine().getReasonPhrase());
 				}
 				responseDisconnect.close();
 			} catch (IOException | NullPointerException | ParseException e) {
@@ -477,7 +476,7 @@ public class ConnectServerPresenter {
 				HttpPost http = new HttpPost(url);
 				return httpclient.execute(http);
 			}
-		} catch (IOException e) {
+		} catch (IOException | ParseException e) {
 			return null;
 		}
 	}

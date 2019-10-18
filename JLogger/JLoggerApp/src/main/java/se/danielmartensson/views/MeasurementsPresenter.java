@@ -7,10 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import javax.inject.Inject;
 
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.ParseException;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 import com.gluonhq.charm.glisten.animation.BounceInRightTransition;
 import com.gluonhq.charm.glisten.application.MobileApplication;
@@ -23,6 +19,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
+import cz.msebera.android.httpclient.client.methods.CloseableHttpResponse;
+import cz.msebera.android.httpclient.impl.client.CloseableHttpClient;
+import cz.msebera.android.httpclient.util.EntityUtils;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -192,7 +191,7 @@ public class MeasurementsPresenter {
 			if (httpclient == null)
 				return;
 			CloseableHttpResponse response = ConnectServerPresenter.getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/getdevices", "GET");
-			if(response.getCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == 200) {
 				// In this case, there is a JSON message of a String[] object included inside this simpleMessageStatus object
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
 				if(simpleMessageStatus.getStatuscode() == 200) {
@@ -211,7 +210,7 @@ public class MeasurementsPresenter {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
 			}
 			
-		} catch (IOException | NullPointerException | ParseException e) {
+		} catch (IOException | NullPointerException e) {
 			dialogs.alertDialog(AlertType.ERROR, "Not connected", "You have not connected the server");
 		}
 	}
@@ -385,7 +384,7 @@ public class MeasurementsPresenter {
 			
 			String devicename = selectedDevice.getSelectedItem().getText();
 			CloseableHttpResponse response = ConnectServerPresenter.getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/askforconnection?devicename=" + devicename + "&username=" + connections.getUserName(), "POST");
-			if(response.getCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == 200) {
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
 				if(simpleMessageStatus.getStatuscode() == 200) {
 					// You using the device now
@@ -408,7 +407,7 @@ public class MeasurementsPresenter {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
 			}
 			
-		} catch (IOException | NullPointerException | ParseException e) {
+		} catch (IOException | NullPointerException e) {
 			dialogs.alertDialog(AlertType.ERROR, "Not connected", "You have not connected the server");
 		}
     }

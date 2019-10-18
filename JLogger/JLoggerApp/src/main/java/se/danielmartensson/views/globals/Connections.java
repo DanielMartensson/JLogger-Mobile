@@ -2,8 +2,8 @@ package se.danielmartensson.views.globals;
 
 
 
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 
+import cz.msebera.android.httpclient.impl.client.CloseableHttpClient;
 import lombok.Getter;
 import lombok.Setter;
 

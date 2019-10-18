@@ -1,5 +1,5 @@
--injars '/home/hp/Documentos/Eclipse Workspace/JLogger/JLoggerApp/build/javafxports/tmp/android/multi-dex/allclasses.jar'
--outjars '/home/hp/Documentos/Eclipse Workspace/JLogger/JLoggerApp/build/javafxports/tmp/android/multi-dex/componentClasses.jar'
+-injars /home/hp/Documentos/GitHub/JLogger/JLogger/JLoggerApp/build/javafxports/tmp/android/multi-dex/allclasses.jar
+-outjars /home/hp/Documentos/GitHub/JLogger/JLogger/JLoggerApp/build/javafxports/tmp/android/multi-dex/componentClasses.jar
 
 -libraryjars /home/hp/Programa/Android/build-tools/28.0.3/lib/shrinkedAndroid.jar
 
@@ -9,7 +9,7 @@
 -dontpreverify
 -dontnote
 -dontwarn
--printconfiguration '/home/hp/Documentos/Eclipse Workspace/JLogger/JLoggerApp/build/javafxports/tmp/android/multi-dex/components.flags'
+-printconfiguration /home/hp/Documentos/GitHub/JLogger/JLogger/JLoggerApp/build/javafxports/tmp/android/multi-dex/components.flags
 
 
 -keep class android.support.multidex.MultiDexApplication {

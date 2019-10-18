@@ -10,17 +10,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
 
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
-
+import cz.msebera.android.httpclient.client.methods.CloseableHttpResponse;
+import cz.msebera.android.httpclient.client.methods.HttpPost;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.util.EntityUtils;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.LineChart;
