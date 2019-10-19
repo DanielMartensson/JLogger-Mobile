@@ -1,0 +1,15 @@
+<ul>
+<li>FEATURE: You can now configure <code>@FieldNameConstants</code> to <code>CONSTANT_CASE</code> the generated constants, using a <code>lombok.config</code> option. See the FieldNameConstants documentation. .</li>
+<li>FEATURE: You can now suppress generation of the <code>builder</code> method when using <code>@Builder</code>; usually because you're only interested in the <code>toBuilder</code> method. As a convenience we won't emit warnings about missing <code>@Builder.Default</code> annotations when you do this.</li>
+<li>FEATURE: You can now change the access modifier of generated builder classes. .</li>
+<li>FEATURE: When using <code>@NonNull</code>, or any other annotation that would result in a null-check, you can configure to generate an assert statement instead. .</li>
+<li>FEATURE: Lombok now knows exactly how to treat <code>@com.fasterxml.jackson.annotation.JsonProperty</code> and will copy it to the right places for example when making builders.  .</li>
+<li>PLATFORM: A few lombok features (most notably delombok) failed on JDK12.</li>
+<li>BUGFIX: var/val on methods that return an intersection type would now work in Eclipse.</li>
+<li>BUGFIX: Fix for java6 regression if a field has javadoc.</li>
+<li>BUGFIX: Delombok now delomboks java10's own <code>var</code> as <code>var</code> and not as the actual underlying type.</li>
+<li>BUGFIX: If you use <code>@Builder</code> and manually write the <code>build()</code> method in your builder class, javac would error out instead of deferring to your implementation. <br /></li>
+<li>BUGFIX: <code>@SuperBuilder</code> together with <code>@Singular</code> on non-lists would produce an erroneous <code>emptyList</code> call. .</li>
+<li>IMPROBABLE BREAKING CHANGE: For fields and parameters marked non-null, if the method body starts with an assert statement to ensure the value isn't null, no code to throw an exception will be generated.</li>
+<li>IMPROBABLE BREAKING CHANGE: When using <code>ecj</code> to compile java code with <code>@Builder</code> or <code>@SuperBuilder</code> in it, and a builder setter method was generated for a <code>@NonNull</code>-marked method, no explicit null check would be present. However, running <code>javac</code> on the exact same file <em>would</em> produce the null check. Now ecj also produces this null check. .</li>
+</ul>

@@ -22,7 +22,6 @@ public class DeviceController {
 	
 	@PostMapping("/calldevice")
 	public DeviceMessage callDevice(@RequestBody DeviceMessage deviceMessage) {
-		logger.info("Read from client");
 		
 		// Get message
 		//System.out.println("Device name is: " + deviceMessage.getDevicename());
