@@ -1,1 +1,0 @@
-/home/hp/Documentos/GitHub/JLogger/JLogger/JLoggerApp/build/javafxports/tmp/android/multi-dex/allclasses.jar
