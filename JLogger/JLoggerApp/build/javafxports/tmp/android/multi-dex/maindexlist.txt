@@ -207,6 +207,7 @@ se/danielmartensson/jlogger/Main$$Lambda$2.class
 com/gluonhq/impl/charm/a/d/a.class
 android/support/v4/view/ViewCompat$ResolvedLayoutDirectionMode.class
 android/arch/lifecycle/Lifecycle$Event.class
+se/danielmartensson/jlogger/Main$$Lambda$9.class
 lombok/Delegate.class
 cz/msebera/android/httpclient/annotation/Contract.class
 sun/reflect/CallerSensitive.class
@@ -349,6 +350,7 @@ android/support/annotation/IntegerRes.class
 android/support/v4/view/ViewPager$OnPageChangeListener.class
 java/util/function/Consumer.class
 android/support/annotation/RequiresPermission$Write.class
+se/danielmartensson/views/DigitalsView.class
 javafx/beans/binding/ObjectExpression.class
 lombok/Cleanup.class
 javafx/beans/property/ObjectPropertyBase$Listener.class

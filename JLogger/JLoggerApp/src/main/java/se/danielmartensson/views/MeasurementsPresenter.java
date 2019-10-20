@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
+import cz.msebera.android.httpclient.HttpStatus;
 import cz.msebera.android.httpclient.client.methods.CloseableHttpResponse;
 import cz.msebera.android.httpclient.impl.client.CloseableHttpClient;
 import cz.msebera.android.httpclient.util.EntityUtils;
@@ -384,23 +385,23 @@ public class MeasurementsPresenter {
 			
 			String devicename = selectedDevice.getSelectedItem().getText();
 			CloseableHttpResponse response = ConnectServerPresenter.getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/askforconnection?devicename=" + devicename + "&username=" + connections.getUserName(), "POST");
-			if(response.getStatusLine().getStatusCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
-				if(simpleMessageStatus.getStatuscode() == 200) {
+				if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_OK) {
 					// You using the device now
 					dialogs.alertDialog(AlertType.INFORMATION, "Device", simpleMessageStatus.getMessage());
 					connectionButton.setText("Ask for a disconnection");
 					deviceMessage.setDevicename(devicename);
-				}else if(simpleMessageStatus.getStatuscode() == 403) {
+				}else if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_FORBIDDEN) {
 					// Somebody else are using the device
 					dialogs.alertDialog(AlertType.WARNING, "Device", simpleMessageStatus.getMessage());
-				}else if(simpleMessageStatus.getStatuscode() == 204) {
+				}else if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_NO_CONTENT) {
 					// You are disconnecting the device now
 					dialogs.alertDialog(AlertType.INFORMATION, "Device", simpleMessageStatus.getMessage());
 					connectionButton.setText("Ask for a connection");
-					deviceMessage.setDevicename(null); // Empty
+					deviceMessage.setDevicename(null); // Empty - Not selected
 				}else {
-					// In this case it's 404
+					// In this case it's 404 - Not found any devices
 					dialogs.alertDialog(AlertType.WARNING, "Device", simpleMessageStatus.getMessage());
 				}
 			}else {

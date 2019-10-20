@@ -13,7 +13,7 @@
    <center>
       <HBox prefHeight="400.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <LineChart fx:id="lineChart" style="-fx-background-color: #F0FFFF;" HBox.hgrow="ALWAYS">
+            <LineChart fx:id="lineChart" animated="false" style="-fx-background-color: #F0FFFF;" HBox.hgrow="ALWAYS">
               <xAxis>
                 <CategoryAxis label="Time" side="BOTTOM" />
               </xAxis>

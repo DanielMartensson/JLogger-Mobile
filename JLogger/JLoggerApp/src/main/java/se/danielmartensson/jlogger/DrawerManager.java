@@ -5,6 +5,7 @@ import static se.danielmartensson.jlogger.Main.LOGS_VIEW;
 import static se.danielmartensson.jlogger.Main.MEASUREMENTS_VIEW;
 import static se.danielmartensson.jlogger.Main.PLOT_VIEW;
 import static se.danielmartensson.jlogger.Main.PINMAP_VIEW;
+import static se.danielmartensson.jlogger.Main.DIGITALS_VIEW;
 
 import com.gluonhq.charm.down.Services;
 import com.gluonhq.charm.down.plugins.LifecycleService;
@@ -32,9 +33,10 @@ public class DrawerManager {
 		final Item plotItem = new ViewItem("Plot", MaterialDesignIcon.SHOW_CHART.graphic(), PLOT_VIEW);
 		final Item measurementsItem = new ViewItem("Measurements", MaterialDesignIcon.BUILD.graphic(),MEASUREMENTS_VIEW);
 		final Item connectserverItem = new ViewItem("Connect server",MaterialDesignIcon.TRANSFER_WITHIN_A_STATION.graphic(), CONNECTSERVER_VIEW);
+		final Item digitalsItem = new ViewItem("Digital outputs",MaterialDesignIcon.CALL_TO_ACTION.graphic(), DIGITALS_VIEW);
 		final Item pinmapItem = new ViewItem("STM32 Pinmap",MaterialDesignIcon.COMPUTER.graphic(), PINMAP_VIEW);
 
-		drawer.getItems().addAll(logsItem, plotItem, measurementsItem, connectserverItem, pinmapItem);
+		drawer.getItems().addAll(logsItem, plotItem, measurementsItem, connectserverItem, digitalsItem, pinmapItem);
 
 		if (true) { // Used to be Platform.isDesktop()
             final Item quitItem = new Item("Quit", MaterialDesignIcon.EXIT_TO_APP.graphic());

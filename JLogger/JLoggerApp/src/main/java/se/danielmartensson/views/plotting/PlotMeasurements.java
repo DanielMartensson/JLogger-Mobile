@@ -140,25 +140,12 @@ public class PlotMeasurements extends Thread {
 			deviceMessage.getSliderValues()[3] = (short) slider3.getValue();
 			deviceMessage.getSliderValues()[4] = (short) slider4.getValue();
 			deviceMessage.getSliderValues()[5] = (short) slider5.getValue();
-				
-			// Send the slider values to the server
-			HttpPost httppost = new HttpPost("http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/calldevice");
-			try {
-				httppost.setEntity(new StringEntity(new Gson().toJson(deviceMessage)));
-				httppost.setHeader("Content-type", "application/json");
-				response = connections.getHttpclient().execute(httppost);
-			} catch (Exception e) {
-				System.out.println("Could not get the response");
-				restore(); // Something bad happen -> Quit
-				break;
-			}
-
-
-			// Get time stamp directly after we have send the slider values to JLoggerServer
-			// Then JLoggerServer fast implement the slider values to the JLoggerDevice and JLoggerDevice take a ADC measurement and send it quick back to JLoggerServer
+			deviceMessage.setSendState((byte) 0); // Apply ONLY sliderValues - That's because you don't want set the digital outputs to 0 just because you do some measurements
+			
+			// Get time stamp that match the sliderValues in time position
 			String timeStamp = simpleDateFormat.format(new Date());
 
-			// Sleep - We waiting for the ADC values
+			// Sleep amount of time
 			try {
 				Thread.sleep(Integer.parseInt(configurations.getSampleTime()));
 			} catch (Exception e) {
@@ -166,6 +153,19 @@ public class PlotMeasurements extends Thread {
 				restore(); // Something bad happen -> Quit
 				break;
 			}
+				
+			// Send the slider values to the server - We will get the ADC values directly
+			HttpPost httppost = new HttpPost("http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/calldevice");
+			try {
+				httppost.setEntity(new StringEntity(new Gson().toJson(deviceMessage)));
+				httppost.setHeader("Content-type", "application/json");
+				response = connections.getHttpclient().execute(httppost); // Blocking
+			} catch (Exception e) {
+				System.out.println("Could not get the response");
+				restore(); // Something bad happen -> Quit
+				break;
+			}
+
 			// Now get the ADC values
 			try {
 				String json = EntityUtils.toString(response.getEntity());
@@ -219,7 +219,7 @@ public class PlotMeasurements extends Thread {
 	try {
 		bufferedWriter.close();
 	} catch (Exception e) {
-		// TODO: Dialog here
+		System.out.println("Error: Cannot save measurement file!");
 	}
 }
 	

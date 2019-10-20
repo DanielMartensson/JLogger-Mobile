@@ -1,6 +1,7 @@
 package se.danielmartensson.jlogger;
 
 import se.danielmartensson.views.ConnectServerView;
+import se.danielmartensson.views.DigitalsView;
 import se.danielmartensson.views.LogsView;
 import se.danielmartensson.views.MeasurementsView;
 import se.danielmartensson.views.PinmapView;
@@ -23,7 +24,9 @@ public class Main extends MobileApplication {
 	public static final String PLOT_VIEW = "Plot View";
 	public static final String MEASUREMENTS_VIEW = "Measurements View";
 	public static final String CONNECTSERVER_VIEW = "Connect Server View";
+	public static final String DIGITALS_VIEW = "Digitals View";
 	public static final String PINMAP_VIEW = "Pinmap View";
+	
 
 	@Override
 	public void init() {
@@ -42,6 +45,7 @@ public class Main extends MobileApplication {
 		addViewFactory(PLOT_VIEW, () -> (View) new PlotView().getView());
 		addViewFactory(MEASUREMENTS_VIEW, () -> (View) new MeasurementsView().getView());
 		addViewFactory(CONNECTSERVER_VIEW, () -> (View) new ConnectServerView().getView());
+		addViewFactory(DIGITALS_VIEW, () -> (View) new DigitalsView().getView());
 		addViewFactory(PINMAP_VIEW, () -> (View) new PinmapView().getView());
 
 		DrawerManager.buildDrawer(this);

@@ -31,9 +31,13 @@ Then I starting to sample. To the right you can se a panel with sliders. Here I 
 
 ![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Logging.png)
 
-And this is how my output looks like. If I only select few legends, the column widt is going to be smaller. So this software is very dynamical and does not use unnecessary legends that are not being used.
+And this is how my output looks like. If I only select few legends, the column width is going to be smaller. So this software is very dynamical and does not use unnecessary legends that are not being used.
 
 ![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Result.png)
+
+If you not planning to use JLogger as a logging tool, you can use it to turn on relays, lamps, pumps etc, or have it as a home equipment to light up the house before you comming home. This IoT-tool have 27 different digital outputs to use and also memory saving so you won't forget which button have been activated before.
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Digitals.png)
 
 ## Microcrontroller connection
 
@@ -82,9 +86,10 @@ Step 7: Start the JLogger with
 ./gradlew run // For Linux
 gradlew run // For Windows
 ```
+Or you can just download the Android APK file from [here](https://github.com/DanielMartensson/JLogger/tree/master/JLogger/JLoggerApp/build/javafxports/android)
 
-Step 8: Create a mobile application of JLogger
-https://docs.gluonhq.com/getting-started/#introduction
+Step 8(optional): Create a [mobile application](https://docs.gluonhq.com/getting-started/#introduction) of JLogger at here if you want to modify.
+
 
 ## How can I configure the JLoggerDevice?
 
@@ -94,18 +99,81 @@ In the main.c file, you can change where what you want to do. Example if you wan
 
 ```
 /*
- * When we get our message, in this case it will be sizeof(RXData) bytes of slider inputs.
+ * When we get our message, in this case it will be sizeof(RXData)/sizeof(RXData[0]) bytes of slider inputs.
  * This method will be called
  */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
-	// Convert RXData to timer pulses - Not for the ADC and the Diter. They are constant clock
-	htim1.Instance->CCR1 = (uint32_t) ((RXData[0] << 8) | RXData[1]);
-	htim1.Instance->CCR2 = (uint32_t) ((RXData[2] << 8) | RXData[3]);
-	htim1.Instance->CCR3 = (uint32_t) ((RXData[4] << 8) | RXData[5]);
-	htim1.Instance->CCR4 = (uint32_t) ((RXData[6] << 8) | RXData[7]);
-	htim2.Instance->CCR1 = (uint32_t) ((RXData[8] << 8) | RXData[9]);
-	htim2.Instance->CCR2 = (uint32_t) ((RXData[10] << 8) | RXData[11]);
+	// Check if we are going to ONLY set PWM's(0) or set digitals(1). Last RXData have the send state element
+	uint8_t send_state = RXData[sizeof(RXData)/sizeof(RXData[0]) - 1];
+	if(send_state == 0){
+		// Set PWM counters period by convert short -> byte
+		htim1.Instance->CCR1 = (uint32_t) ((RXData[0] << 8) | RXData[1]);
+		htim1.Instance->CCR2 = (uint32_t) ((RXData[2] << 8) | RXData[3]);
+		htim1.Instance->CCR3 = (uint32_t) ((RXData[4] << 8) | RXData[5]);
+		htim1.Instance->CCR4 = (uint32_t) ((RXData[6] << 8) | RXData[7]);
+		htim2.Instance->CCR1 = (uint32_t) ((RXData[8] << 8) | RXData[9]);
+		htim2.Instance->CCR2 = (uint32_t) ((RXData[10] << 8) | RXData[11]);
+	}else if(send_state == 1){
+		// For digitals only - We start at index 13, which is position 12
+		for(uint8_t i = 12; i < sizeof(RXData)/sizeof(RXData[0]); i++){
+			if(i == 12){ 	   // Digital 0
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, RXData[i]); //RXData[i] = One or Zero
+			}else if(i == 13){ // Digital 1
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, RXData[i]);
+			}else if(i == 14){ // Digital 2
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, RXData[i]);
+			}else if(i == 15){ // Digital 3
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, RXData[i]);
+			}else if(i == 16){ // Digital 4
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, RXData[i]);
+			}else if(i == 17){ // Digital 5
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, RXData[i]);
+			}else if(i == 18){ // Digital 6
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, RXData[i]);
+			}else if(i == 19){ // Digital 7
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RXData[i]);
+			}else if(i == 20){ // Digital 8
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, RXData[i]);
+			}else if(i == 21){ // Digital 9
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RXData[i]);
+			}else if(i == 22){ // Digital 10
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, RXData[i]);
+			}else if(i == 23){ // Digital 11
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, RXData[i]);
+			}else if(i == 24){ // Digital 12
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, RXData[i]);
+			}else if(i == 25){ // Digital 13
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, RXData[i]);
+			}else if(i == 26){ // Digital 14
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, RXData[i]);
+			}else if(i == 27){ // Digital 15
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RXData[i]);
+			}else if(i == 28){ // Digital 16
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RXData[i]);
+			}else if(i == 29){ // Digital 17
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RXData[i]);
+			}else if(i == 30){ // Digital 18
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RXData[i]);
+			}else if(i == 31){ // Digital 19
+				HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RXData[i]);
+			}else if(i == 32){ // Digital 20
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, RXData[i]);
+			}else if(i == 33){ // Digital 21
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, RXData[i]);
+			}else if(i == 34){ // Digital 22
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, RXData[i]);
+			}else if(i == 35){ // Digital 23
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, RXData[i]);
+			}else if(i == 36){ // Digital 24
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, RXData[i]);
+			}else if(i == 37){ // Digital 25
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, RXData[i]);
+			}else if(i == 38){ // Digital 26
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, RXData[i]);
+			}
+		}
+	}
 
 	// Convert ADC values to
 	TXData[0] = (uint8_t) (ADCValues[0] >> 8);
@@ -122,10 +190,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	TXData[11] = (uint8_t) (ADCValues[5] & 0xFF);
 
 	// Send data to JLoggerServer in about 5 milliseconds
-	HAL_UART_Transmit(&huart2, TXData, 12, 5);
+	HAL_UART_Transmit(&huart2, TXData, sizeof(TXData)/sizeof(TXData[0]), 5);
 
 	// Listen for a new receive
-	HAL_UART_Receive_DMA(&huart2, RXData, 12);
+	HAL_UART_Receive_DMA(&huart2, RXData, sizeof(RXData)/sizeof(RXData[0]));
 
 }
 ```

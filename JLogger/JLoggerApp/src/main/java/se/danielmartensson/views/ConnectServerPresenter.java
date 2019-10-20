@@ -18,9 +18,11 @@ import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import cz.msebera.android.httpclient.HttpStatus;
 import cz.msebera.android.httpclient.ParseException;
 import cz.msebera.android.httpclient.auth.AuthScope;
 import cz.msebera.android.httpclient.auth.UsernamePasswordCredentials;
+import cz.msebera.android.httpclient.client.config.RequestConfig;
 import cz.msebera.android.httpclient.client.methods.CloseableHttpResponse;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
@@ -157,13 +159,13 @@ public class ConnectServerPresenter {
 				return; 
 			}
 			CloseableHttpResponse response = getResponse(httpclient,"http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/admin/getuser?username=" + tableView.getSelectionModel().getSelectedItem().getName(), "GET");
-			if (response.getStatusLine().getStatusCode() == 403) {
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN) {
 				dialogs.alertDialog(AlertType.WARNING, "Forbidden", "You don't have the authority");
 				return; // Forbidden
 			}
 			// In this case, there is a JSON message of a User object included inside this simpleMessageStatus object
 			SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
-			if(simpleMessageStatus.getStatuscode() == 404) {
+			if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_NOT_FOUND) {
 				dialogs.alertDialog(AlertType.WARNING, "Exist", simpleMessageStatus.getMessage()); // Except this 404 case does not include json message
 				return;
 			}
@@ -210,9 +212,9 @@ public class ConnectServerPresenter {
 			httppost.setEntity(new StringEntity(new Gson().toJson(user)));
 			httppost.setHeader("Content-type", "application/json");
 			response = httpclient.execute(httppost);
-			if(response.getStatusLine().getStatusCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
-				if(simpleMessageStatus.getStatuscode() == 200) {
+				if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_OK) {
 					dialogs.alertDialog(AlertType.INFORMATION, "Updated", simpleMessageStatus.getMessage());
 				}else {
 					// In this case it's 404
@@ -236,10 +238,10 @@ public class ConnectServerPresenter {
 			if (httpclient == null)
 				return;
 			CloseableHttpResponse response = getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/searchusers", "GET");
-			if(response.getStatusLine().getStatusCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				// In this case, there is a JSON message of a List<Online> object included inside this simpleMessageStatus object
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
-				if(simpleMessageStatus.getStatuscode() == 200) {
+				if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_OK) {
 					// Get our list
 					Type type = new TypeToken<List<Online>>() {}.getType();
 					List<Online> usersOnline = new Gson().fromJson(simpleMessageStatus.getMessage(), type);
@@ -274,15 +276,15 @@ public class ConnectServerPresenter {
 				return; 
 			}
 			CloseableHttpResponse response = getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/admin/deleteuser?username=" + tableView.getSelectionModel().getSelectedItem().getName(), "POST");
-			if(response.getStatusLine().getStatusCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
-				if(simpleMessageStatus.getStatuscode() == 200) {
+				if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_OK) {
 					dialogs.alertDialog(AlertType.INFORMATION, "Deleted", simpleMessageStatus.getMessage());
 				}else {
 					// In this case it's 404
 					dialogs.alertDialog(AlertType.WARNING, "Exist", simpleMessageStatus.getMessage());
 				}
-			}else if(response.getStatusLine().getStatusCode() == 403) {
+			}else if(response.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN) {
 				dialogs.alertDialog(AlertType.WARNING, "Forbidden", "You don't have the authority");
 			}else {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
@@ -328,15 +330,15 @@ public class ConnectServerPresenter {
 			httppost.setEntity(new StringEntity(new Gson().toJson(user)));
 			httppost.setHeader("Content-type", "application/json");
 			CloseableHttpResponse response = httpclient.execute(httppost);
-			if(response.getStatusLine().getStatusCode() == 200) {
+			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
-				if(simpleMessageStatus.getStatuscode() == 200) {
+				if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_OK) {
 					dialogs.alertDialog(AlertType.INFORMATION, "Added", simpleMessageStatus.getMessage());
 				}else {
 					// In this case it's 403
 					dialogs.alertDialog(AlertType.WARNING, "Exist", simpleMessageStatus.getMessage());
 				}
-			}else if(response.getStatusLine().getStatusCode() == 403) {
+			}else if(response.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN) {
 				dialogs.alertDialog(AlertType.WARNING, "Forbidden", "You don't have the authority");
 			}else {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
@@ -356,18 +358,25 @@ public class ConnectServerPresenter {
 	void connectServer(ActionEvent event) {
 		if (connections.isConnected() == false) {
 			try {
+				// Set the timeout
+				int timeout = 10; // seconds
+				RequestConfig config = RequestConfig.custom()
+				  .setConnectTimeout(timeout * 1000)
+				  .setConnectionRequestTimeout(timeout * 1000)
+				  .setSocketTimeout(timeout * 1000).build();
+				
 				// First create the initial Http client
 				BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
 				credsProvider.setCredentials(new AuthScope(serverAddress.getText(), Integer.parseInt(serverPort.getSelectedItem().getText())), new UsernamePasswordCredentials(userName.getText(), password.getText()));
-				CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+				CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).setDefaultRequestConfig(config).build();		
 				
 				// Then get our response
 				CloseableHttpResponse response = getResponse(httpclient, "http://" + serverAddress.getText() + ":" + serverPort.getSelectedItem().getText() + "/user/connect?username=" + userName.getText(), "GET");
 				SimpleMessageStatus simpleMessageStatus =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(response.getEntity()));				
 				
 				// Now do some connections
-				if (response.getStatusLine().getStatusCode() == 200) {
-					if(simpleMessageStatus.getStatuscode() == 200) {
+				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+					if(simpleMessageStatus.getStatuscode() == HttpStatus.SC_OK) {
 						// Display the news
 						dialogs.alertDialog(AlertType.INFORMATION, "Connected", simpleMessageStatus.getMessage());
 						connectServerButton.setText("Disconnect from the server");
@@ -380,10 +389,10 @@ public class ConnectServerPresenter {
 						connections.setHttpclient(httpclient);
 						
 						// Set device to None
-						deviceMessage.setDevicename("None");
+						deviceMessage.setDevicename(null);
 						
-						// Ask for a disconnection
-						response = ConnectServerPresenter.getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/askforconnection?devicename=" + deviceMessage.getDevicename() + "&username=" + connections.getUserName(), "POST");
+						// Ask for a disconnection - We say the device name is None, not null here
+						response = ConnectServerPresenter.getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/user/askforconnection?devicename=" + "None" + "&username=" + connections.getUserName(), "POST");
 						
 						// Disable UI components
 						serverAddress.setDisable(true);
@@ -416,12 +425,12 @@ public class ConnectServerPresenter {
 				SimpleMessageStatus simpleMessageStatusDisconnect =  new SimpleMessageStatus().getJsonMessage(EntityUtils.toString(responseDisconnect.getEntity()));				
 				
 				// Check if we got connection
-				if (responseDisconnect.getStatusLine().getStatusCode() == 200) {
+				if (responseDisconnect.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 					// Logout the user from Spring Security
 					CloseableHttpResponse responseLogout = getResponse(httpclient, "http://" + connections.getServerAddress() + ":" + connections.getServerPort() + "/logout", "POST");
 
 					// Check if we could logout from Spring
-					if(responseLogout.getStatusLine().getStatusCode() == 204) {
+					if(responseLogout.getStatusLine().getStatusCode() == HttpStatus.SC_NO_CONTENT) {
 						// Display the news
 						dialogs.alertDialog(AlertType.INFORMATION, "Logged out", simpleMessageStatusDisconnect.getMessage());
 						connectServerButton.setText("Connect to the server");
