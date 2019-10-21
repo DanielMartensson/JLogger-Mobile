@@ -442,6 +442,10 @@ public class DigitalsPresenter {
 				file = fileHandler.loadNewFile(DIGITAL_OUTPUT_STATES + deviceMessage.getDevicename().replace("/", "_") + ".json");
 			}
 			
+			// What if file exist, but file is null
+			if(file == null)
+				file = fileHandler.loadNewFile(DIGITAL_OUTPUT_STATES + deviceMessage.getDevicename().replace("/", "_") + ".json");
+			
 			// Save now
 			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
 			Type type = new TypeToken<DigitalsConfiguration>() {}.getType();

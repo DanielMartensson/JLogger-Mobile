@@ -169,7 +169,7 @@
                         </HBox>
                         <HBox alignment="CENTER_LEFT">
                            <children>
-                              <Label text="Y5:">
+                              <Label text="Y5">
                                  <padding>
                                     <Insets left="10.0" right="10.0" />
                                  </padding>

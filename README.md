@@ -63,6 +63,10 @@ And here is the real time logging display. I have only select one legend, theref
 
 ![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/SetupLog.png)
 
+Here is when I have connection from my Android smartphone and I control PWM and digital outputs at the same time, without they affecting  each other.
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Online.jpg)
+
 ## How do I use this software?
 
 Step 1: Install MySQL and create a user that have granted rights to create tables and databases

@@ -57,7 +57,7 @@
                                  <children>
                                     <HBox VBox.vgrow="ALWAYS">
                                        <children>
-                                          <Label text="Analog 0">
+                                          <Label text="Y0">
                                              <padding>
                                                 <Insets left="5.0" right="5.0" top="5.0" />
                                              </padding>
@@ -76,7 +76,7 @@
                                     </HBox>
                                     <HBox>
                                        <children>
-                                          <Label text="Analog 1">
+                                          <Label text="Y1">
                                              <padding>
                                                 <Insets left="5.0" right="5.0" top="5.0" />
                                              </padding>
@@ -94,7 +94,7 @@
                                     </HBox>
                                     <HBox>
                                        <children>
-                                          <Label text="Analog 2">
+                                          <Label text="Y2">
                                              <padding>
                                                 <Insets left="5.0" right="5.0" top="5.0" />
                                              </padding>
@@ -112,7 +112,7 @@
                                     </HBox>
                                     <HBox>
                                        <children>
-                                          <Label text="Analog 3">
+                                          <Label text="Y3">
                                              <padding>
                                                 <Insets left="5.0" right="5.0" top="5.0" />
                                              </padding>
@@ -130,7 +130,7 @@
                                     </HBox>
                                     <HBox>
                                        <children>
-                                          <Label text="Analog 4">
+                                          <Label text="Y4">
                                              <padding>
                                                 <Insets left="5.0" right="5.0" top="5.0" />
                                              </padding>
@@ -148,7 +148,7 @@
                                     </HBox>
                                     <HBox>
                                        <children>
-                                          <Label text="Analog 5">
+                                          <Label text="Y5">
                                              <padding>
                                                 <Insets left="5.0" right="5.0" top="5.0" />
                                              </padding>
