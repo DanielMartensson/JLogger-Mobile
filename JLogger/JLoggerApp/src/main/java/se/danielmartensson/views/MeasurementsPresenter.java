@@ -1,9 +1,7 @@
 package se.danielmartensson.views;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import javax.inject.Inject;
 
@@ -211,7 +209,7 @@ public class MeasurementsPresenter {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
 			}
 			
-		} catch (IOException | NullPointerException e) {
+		} catch (Exception e) {
 			dialogs.alertDialog(AlertType.ERROR, "Not connected", "You have not connected the server");
 		}
 	}
@@ -338,8 +336,9 @@ public class MeasurementsPresenter {
 					showMaxData.setSelectedItem(menuItem);
 
 		} catch (NullPointerException e) {
+			// When we have not selected a log, this will happen
 			dialogs.alertDialog(AlertType.WARNING, "No configurations", "There where no configurations loaded");
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			dialogs.exception("Configurations file not found", e);
 		}
 	}
@@ -408,7 +407,7 @@ public class MeasurementsPresenter {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
 			}
 			
-		} catch (IOException | NullPointerException e) {
+		} catch (Exception e) {
 			dialogs.alertDialog(AlertType.ERROR, "Not connected", "You have not connected the server");
 		}
     }

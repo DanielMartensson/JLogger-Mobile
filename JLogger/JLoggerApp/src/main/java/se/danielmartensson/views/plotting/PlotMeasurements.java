@@ -4,7 +4,6 @@ package se.danielmartensson.views.plotting;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -103,7 +102,7 @@ public class PlotMeasurements extends Thread {
 			File file = fileHandler.loadNewFile(LogsPresenter.LOG_FOLDER_PATH + measurementLogs.getLogName() + "/" + measurementLogs.getLogName() + ".measure");
 			bufferedWriter = new BufferedWriter(new FileWriter(file));
 			bufferedWriter.write(""); // Clear
-		} catch (IOException e1) {
+		} catch (Exception e) {
 			restore(); // Something bad happen -> Quit
 		}
 
@@ -244,7 +243,7 @@ public class PlotMeasurements extends Thread {
 	private void appendWith(String text) {
 		try {
 			bufferedWriter.append(text);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			restore(); // Something bad happen -> Quit
 		}
 	}

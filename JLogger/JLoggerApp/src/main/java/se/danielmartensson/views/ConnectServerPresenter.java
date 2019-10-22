@@ -1,6 +1,9 @@
 package se.danielmartensson.views;
 
-import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
@@ -17,9 +20,9 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 
 import cz.msebera.android.httpclient.HttpStatus;
-import cz.msebera.android.httpclient.ParseException;
 import cz.msebera.android.httpclient.auth.AuthScope;
 import cz.msebera.android.httpclient.auth.UsernamePasswordCredentials;
 import cz.msebera.android.httpclient.client.config.RequestConfig;
@@ -43,6 +46,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import se.danielmartensson.tools.Dialogs;
+import se.danielmartensson.tools.FileHandler;
 import se.danielmartensson.views.containers.OnlineTableContainer;
 import se.danielmartensson.views.globals.Connections;
 import se.danielmartensson.views.messages.DeviceMessage;
@@ -50,10 +54,13 @@ import se.danielmartensson.views.messages.Online;
 import se.danielmartensson.views.messages.Role;
 import se.danielmartensson.views.messages.SimpleMessageStatus;
 import se.danielmartensson.views.messages.User;
+import se.danielmartensson.views.savings.LastLogin;
 
 public class ConnectServerPresenter {
 
-	public static String[] ports = { "80", "8080", "8090"};
+	private static final String LOGIN_PARAMETERS = "/JLoggerStorage/loginparameters.json";
+
+	public static String[] ports = { "80", "8080", "8081", "8082", "8085", "8090"};
 
 	@FXML
 	private View connectserver;
@@ -98,6 +105,9 @@ public class ConnectServerPresenter {
 	
 	@Inject
 	private DeviceMessage deviceMessage;
+	
+	@Inject
+	private FileHandler fileHandler;
 
 	@FXML
 	public void initialize() {
@@ -108,14 +118,15 @@ public class ConnectServerPresenter {
 		connectserver.showingProperty().addListener((obs, oldValue, newValue) -> {
 			if (newValue) {
 				AppBar appBar = MobileApplication.getInstance().getAppBar();
-				appBar.setNavIcon(
-						MaterialDesignIcon.MENU.button(e -> MobileApplication.getInstance().getDrawer().open()));
+				appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> MobileApplication.getInstance().getDrawer().open()));
 				appBar.setTitleText("Connect server");
 				appBar.getActionItems().add(MaterialDesignIcon.PEOPLE.button(e -> addUser()));
 				appBar.getActionItems().add(MaterialDesignIcon.SEARCH.button(e -> searchUsers()));
 				appBar.getActionItems().add(MaterialDesignIcon.CREATE.button(e -> editUser()));
 				appBar.getActionItems().add(MaterialDesignIcon.DELETE.button(e -> deleteUser()));
-
+				
+				// Insert the last login parameters
+				loadLoginParameters();
 			}else {
 				// When you leave
 				
@@ -141,6 +152,31 @@ public class ConnectServerPresenter {
 		// Clear the online table
 		tableViewListener.clear();
 		tableView.setDisable(true);
+	}
+
+	/**
+	 * This function will set the parameters of last login
+	 */
+	private void loadLoginParameters() {
+		if(fileHandler.exist(LOGIN_PARAMETERS) == true) {
+			try {
+				File file = fileHandler.loadNewFile(LOGIN_PARAMETERS);
+				LastLogin lastLogin = new Gson().fromJson(new JsonReader(new FileReader(file)), LastLogin.class);
+				serverAddress.setText(lastLogin.getServerAddress());
+				userName.setText(lastLogin.getUserName());
+				for(int i = 0; i < ports.length; i++) {
+					if(ports[i].equals(lastLogin.getServerPort()) == true) {
+						serverPort.setSelectedItem(serverPort.getItems().get(i)); // Select
+					}
+				}	
+			} catch (Exception e) {
+				dialogs.exception("Cannot load: " + LOGIN_PARAMETERS, e);
+			}
+			
+		}else {
+			// No file exist, create
+			fileHandler.createNewFile(LOGIN_PARAMETERS, true);
+		}
 	}
 
 	/**
@@ -224,7 +260,7 @@ public class ConnectServerPresenter {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
 			}
 			response.close();
-		} catch (IOException | IllegalStateException | ParseException e) {
+		} catch (Exception e) {
 			dialogs.exception("Cannot search for users - not connected", e);
 		}
 	}
@@ -258,7 +294,7 @@ public class ConnectServerPresenter {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
 			}
 			response.close();
-		} catch (IOException | IllegalStateException | ParseException e) {
+		} catch (Exception e) {
 			dialogs.exception("Cannot search for users - not connected", e);
 		}
 	}
@@ -291,7 +327,7 @@ public class ConnectServerPresenter {
 			}
 			response.close();
 			
-		} catch (IOException | ParseException e) {
+		} catch (Exception e) {
 			dialogs.exception("Cannot add a new user to the server", e);
 		}
 	}
@@ -344,7 +380,7 @@ public class ConnectServerPresenter {
 				dialogs.alertDialog(AlertType.ERROR, "Response", "Could not get the response from server");
 			}
 			response.close();
-		} catch (IOException | ParseException e) {
+		} catch (Exception e) {
 			dialogs.exception("Cannot add a new user to the server", e);
 		}
 	}
@@ -406,6 +442,9 @@ public class ConnectServerPresenter {
 						// Clear the online table
 						tableViewListener.clear();
 						tableView.setDisable(false);
+						
+						// Save login parameters
+						saveLoginParameters();
 					}else {
 						// In this case it's 404
 						dialogs.alertDialog(AlertType.WARNING, "Not exist", simpleMessageStatus.getMessage());
@@ -414,7 +453,7 @@ public class ConnectServerPresenter {
 					dialogs.alertDialog(AlertType.ERROR, "Not connected", "Failed to login");
 				}
 				response.close();
-			} catch (IOException | NullPointerException | ParseException e) {
+			} catch (Exception e) {
 				dialogs.exception("Cannot connect server", e);
 			}
 		}else {
@@ -463,12 +502,37 @@ public class ConnectServerPresenter {
 					dialogs.alertDialog(AlertType.ERROR, "Not disconnected", responseDisconnect.getStatusLine().getReasonPhrase());
 				}
 				responseDisconnect.close();
-			} catch (IOException | NullPointerException | ParseException e) {
+			} catch (Exception e) {
 				dialogs.exception("Cannot disconnect server", e);
 			}
 		}
 	}
 	
+	/**
+	 * This will save the login parameters
+	 */
+	private void saveLoginParameters() {
+		if(fileHandler.exist(LOGIN_PARAMETERS) == true) {
+			try {
+				File file = fileHandler.loadNewFile(LOGIN_PARAMETERS);
+				LastLogin lastLogin = new LastLogin();
+				lastLogin.setServerAddress(serverAddress.getText());
+				lastLogin.setServerPort(serverPort.getSelectedItem().getText());
+				lastLogin.setUserName(userName.getText());
+				String json = new Gson().toJson(lastLogin);
+				BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+				bufferedWriter.write(json);
+				bufferedWriter.close();
+			} catch (Exception e) {
+				dialogs.exception("Cannot load: " + LOGIN_PARAMETERS, e);
+			}
+			
+		}else {
+			// No file exist, create
+			fileHandler.createNewFile(LOGIN_PARAMETERS, true);
+		}
+	}
+
 	/**
 	 * Get the response
 	 * @param httpclient The client handler
@@ -485,7 +549,7 @@ public class ConnectServerPresenter {
 				HttpPost http = new HttpPost(url);
 				return httpclient.execute(http);
 			}
-		} catch (IOException | ParseException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}

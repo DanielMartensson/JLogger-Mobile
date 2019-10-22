@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Type;
 
 import javax.inject.Inject;
@@ -391,7 +390,7 @@ public class DigitalsPresenter {
 								}
 							}
 							bufferedreader.close();
-						} catch (IOException e) {
+						} catch (Exception e) {
 							dialogs.exception("Cannot load digital configurations", e);
 						}
 					}else {
@@ -452,7 +451,7 @@ public class DigitalsPresenter {
 			String json = new Gson().toJson(digitalsConfiguration,type);
 			bufferedWriter.write(json);
 			bufferedWriter.close();
-		} catch (IOException | NullPointerException e) {
+		} catch (Exception e) {
 			dialogs.exception("Cannot save the digital configurations", e);
 		}
 		
@@ -608,7 +607,7 @@ public class DigitalsPresenter {
 			// Done!
 			return true; // Success!
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			dialogs.exception("Could not get the response", e);
 		}
 		return false; // Fail
