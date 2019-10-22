@@ -69,19 +69,19 @@ Here is when I have connection from my Android smartphone and I control PWM and 
 
 I also tried to implement JLoggerServer onto a Raspberry Pi Zero W and it works! Also I used MariaDB instead of MySQL and I didn't even need to change any database configurations at all. Nothing. Just boot it an run. 
 
-![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/CompleteSystem.jpg)
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/CompleteSystem.jpg | width=100)
 
 Login from my phone
 
-![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidLogin.png)
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidLogin.png | width=100)
 
 Real time sampling from my phone when JLoggerServer is applied onto Raspberry Pi Zero W
 
-![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidLogging.png)
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidLogging.png | width=100)
 
 Digials works as well
 
-![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidDigitals.png)
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidDigitals.png | width=100)
 
 And connect it to PuTTY SSH Client works too
 
