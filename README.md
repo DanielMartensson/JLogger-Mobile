@@ -67,7 +67,7 @@ Here is when I have connection from my Android smartphone and I control PWM and 
 
 ![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Online.jpg)
 
-I also tried to implement JLoggerServer onto a Raspberry Pi Zero W and it works! Also I used MariaDB instead of MySQL and I didn't even need to change any database configurations at all. Nothing. Just boot it an run. 
+I also tried to implement JLoggerServer onto a Raspberry Pi Zero W and it works! Also I used MariaDB instead of MySQL and I didn't even need to change any database configurations at all. Nothing. Just boot it and run. 
 
 ![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/CompleteSystem.jpg)
 
