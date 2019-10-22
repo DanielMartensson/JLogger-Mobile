@@ -67,6 +67,34 @@ Here is when I have connection from my Android smartphone and I control PWM and 
 
 ![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Online.jpg)
 
+I also tried to implement JLoggerServer onto a Raspberry Pi Zero W and it works! Also I used MariaDB instead of MySQL and I didn't even need to change any database configurations at all. Nothing. Just boot it an run. 
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/CompleteSystem.jpg)
+
+Login from my phone
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidLogin.png)
+
+Real time sampling from my phone when JLoggerServer is applied onto Raspberry Pi Zero W
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidLogging.png)
+
+Digials works as well
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/AndroidDigitals.png)
+
+And connect it to PuTTY SSH Client works too
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/Putty.png)
+
+To make JLoggerServer bootable inside a Raspbery. Just paste this code right above `exit 0` in `/etc/rc.local`
+Also, you need to implement JLoggerServer as well.
+
+![a](https://raw.githubusercontent.com/DanielMartensson/JLogger/master/Pictures/BootRaspberry.png)
+
+Just follow this [manual](https://www.raspberrypi.org/documentation/linux/usage/rc-local.md) about make a program bootable at startup onto a Raspberry Pi/Ubuntu/Debian etc.
+
+
 ## How do I use this software?
 
 Step 1: Install MySQL and create a user that have granted rights to create tables and databases
