@@ -22,11 +22,8 @@ dependencies {
     compile 'com.gluonhq:charm:5.0.2'
     compile 'com.airhacks:afterburner.mfx:1.6.3'
     compile group: 'org.projectlombok', name: 'lombok', version: '1.18.8'	
-    //compile group: 'org.apache.httpcomponents.client5' , name: 'httpclient5' , version: '5.0-beta6'
     compile 'com.google.code.gson:gson:2.8.5'
     compile group: 'cz.msebera.android' , name: 'httpclient', version: '4.5.8'
-    
-    
 }
 
 jfxmobile {
